@@ -107,7 +107,7 @@ function buildJSONConfig(payload: unknown): Promise<RequestInit> {
   return Promise.resolve({
     method: 'POST',
     compress: true,
-    headers: { 'content-type': 'application/json', connection: 'keep-alive' },
+    headers: { 'content-type': 'application/json', connection: 'keep-alive', Host: 'api.telegram.org' },
     body: JSON.stringify(payload, replacer),
   })
 }
@@ -143,6 +143,7 @@ async function buildFormDataConfig(
     headers: {
       'content-type': `multipart/form-data; boundary=${boundary}`,
       connection: 'keep-alive',
+      Host: 'api.telegram.org'
     },
     body: formData,
   }
@@ -364,9 +365,9 @@ class ApiClient {
 
     const config: RequestInit = includesMedia(payload)
       ? await buildFormDataConfig(
-          { method, ...payload },
-          options.attachmentAgent
-        )
+        { method, ...payload },
+        options.attachmentAgent
+      )
       : await buildJSONConfig(payload)
     const apiUrl = new URL(
       `./${options.apiMode}${token}${options.testEnv ? '/test' : ''}/${method}`,
